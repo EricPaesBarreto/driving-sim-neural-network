@@ -6,41 +6,38 @@ using UnityEngine.InputSystem;
 public class CarDriving : MonoBehaviour
 {
     // car's properties
+    //private
+    private Rigidbody2D rb;
+
     // public
-    public GameObject Tire;
-    public float Acceleration_speed = 3; // metres / second^2
-    public float Braking_speed = 5;
-    public float mass = 5;
+    public float Mass = 1;
+    public float Horsepower = 1;
+    public GameObject Wheel;
+
 
     //methods
-    private void Accelerate()
+    private void Awake()
     {
-        GetComponent<Collider2D>().attachedRigidbody.AddForce(this.transform.rotation * Vector2.up * Acceleration_speed * Time.deltaTime);
+        rb = this.GetComponent<Rigidbody2D>();
+        rb.mass = Mass;
     }
 
-    private void Brake()
+    public void Accelerate(InputAction.CallbackContext context)
     {
-        if (GetComponent<Collider2D>().attachedRigidbody.totalForce.magnitude > Braking_speed)
+        // Accelerate the car "forwards"
+        Debug.Log($"Accelerate: {context}");
+        if (context.performed)
         {
-            GetComponent<Collider2D>().attachedRigidbody.AddForce(this.transform.rotation * Vector2.down * Braking_speed * Time.deltaTime);
+            rb.AddForce(this.transform.rotation * Vector2.up * Horsepower);
         }
-        else
-        {
-            GetComponent<Collider2D>().attachedRigidbody.AddForce(this.transform.rotation * Vector2.down * Acceleration_speed * Time.deltaTime);
-        }
-        
     }
 
-    void Update()
+    public void Brake(InputAction.CallbackContext context)
     {
-        if (Input.GetKey("w"))
+        // Descelerate the car
+        if (context.performed)
         {
-            Accelerate();
-        }
-
-        if (Input.GetKey("s"))
-        {
-            Brake();
+            // do stuff
         }
     }
 }

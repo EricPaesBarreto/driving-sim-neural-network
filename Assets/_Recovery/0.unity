@@ -130,7 +130,7 @@ GameObject:
   - component: {fileID: 140401183}
   - component: {fileID: 140401182}
   m_Layer: 0
-  m_Name: Wheel
+  m_Name: Tire
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -632,7 +632,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CarDriving
   Mass: 1
   Horsepower: 20
-  Wheel: {fileID: 140401181}
+  Tire: {fileID: 0}
 --- !u!50 &1606871125
 Rigidbody2D:
   serializedVersion: 5
@@ -648,7 +648,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 0
+  m_GravityScale: 0.1
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
