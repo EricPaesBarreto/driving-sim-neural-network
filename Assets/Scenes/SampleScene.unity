@@ -648,7 +648,7 @@ MonoBehaviour:
     m_ActionId: 7d144aac-9f4f-4dc4-a68a-05e04802b683
     m_ActionName: 'Car/TurnRight[/Keyboard/d,/DualSenseGamepadHID/rightStick/right,/DualSenseGamepadHID1/rightStick/right,/DualSenseGamepadHID2/rightStick/right,/DualSenseGamepadHID3/rightStick/right]'
   m_NeverAutoSwitchControlSchemes: 0
-  m_DefaultControlScheme: DualSense Controller
+  m_DefaultControlScheme: KeyboardMouse
   m_DefaultActionMap: Car
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
@@ -670,7 +670,7 @@ MonoBehaviour:
   forwardReverseSwitchSpeed: 3
   turnRadius: 10
   Wheel: {fileID: 3518886023248738075, guid: 48c13e76052b68545b0b53f40c39ab38, type: 3}
-  Axel: {fileID: 0}
+  Axel: {fileID: 4976698403212226847, guid: 2ebe807ec87d843408199b5c275fb575, type: 3}
   CarCamera: {fileID: 519420031}
 --- !u!50 &1606871125
 Rigidbody2D:
