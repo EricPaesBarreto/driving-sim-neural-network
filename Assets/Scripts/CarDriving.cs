@@ -5,32 +5,32 @@ using UnityEngine.InputSystem;
 public class CarDriving : MonoBehaviour
 {
     // car's properties
-    //private
+    // private
     private Rigidbody2D rb;
     private bool accelerating = false;
     private bool braking = false;
     private bool reversing = false;
-    private bool isGrounded = true; // controls drifting and traction, not implemented yet
-    private GameObject[] wheels = new GameObject[4];
-    private GameObject[] frontWheels = new GameObject[2];
-    private GameObject[] rearWheels = new GameObject[2];
+    private GameObject[] wheels = new GameObject[4];// GameObject references
+    private Wheel[] frontWheels = new Wheel[2];     // Script reference
+    private Wheel[] rearWheels = new Wheel[2];      // Script references
     private GameObject frontAxel;
     private GameObject rearAxel;
 
     // magic numbers for the wheel offsets from the center of the car, used to spawn the wheels in the correct position
     private Dictionary<string, float> wheelOffsets = new Dictionary<string, float>()
     {
-        {"left_right", 1.1f},
+        {"left_right", 1.2f},
         {"front_back", 1.82f}
     };
 
-
     // serialized fields
     [SerializeField] private float mass = 1;
-    [SerializeField] private float horsepower = 1;
-    [SerializeField] private float brakingCoefficient = 0.3f;
-    [SerializeField] private float forwardReverseSwitchSpeed = 1;
-    [SerializeField] private float turnRadius = 10; // degrees
+    [SerializeField] private float engineForce = 1;
+    [SerializeField] private float brakeStrength = 0.3f;
+    [SerializeField] private float minSwitchSpeed = 1;
+    [SerializeField] private float maxSteeringAngle = 40; // degrees, most cars are between 30 and 40
+
+    // prefabs and reference objects
     [SerializeField] private GameObject Wheel;
     [SerializeField] private GameObject Axel;
     [SerializeField] private Camera CarCamera;
@@ -91,13 +91,15 @@ public class CarDriving : MonoBehaviour
                     transform.rotation, 
                     this.transform);
 
-                wheels[fb * 2 + lr].name = "Wheel " + (fb * 2 + lr);
+                wheels[fb * 2 + lr].name = "Wheel " + (fb % 2 == 0? "Front " : "Rear ") + "-" + (lr % 2 == 0? "Left" : "Right");
             }
         }
 
         // assign the front and rear wheels to their respective arrays for easier access later
-        frontWheels = wheels[0..2];
-        rearWheels = wheels[2..4];
+        frontWheels[0] = wheels[0].GetComponent<Wheel>();
+        frontWheels[1] = wheels[1].GetComponent<Wheel>();
+        rearWheels[0] = wheels[2].GetComponent<Wheel>();
+        rearWheels[1] = wheels[3].GetComponent<Wheel>();
     }
 
     private void CreateAxels()
@@ -142,7 +144,7 @@ public class CarDriving : MonoBehaviour
             && !braking     // cannot accelerate while braking
             )
         {
-            if(direction >= 0 || rb.linearVelocity.magnitude < forwardReverseSwitchSpeed)
+            if(direction >= 0 || rb.linearVelocity.magnitude < minSwitchSpeed)
             {
                 // checks if the car is currently moving forwards or backwards
                 accelerating = true;
@@ -172,7 +174,7 @@ public class CarDriving : MonoBehaviour
             && !braking         // cannot reverse while braking
             && !accelerating)   // cannot reverse while accelerating
         {
-            if (direction <= 0 || rb.linearVelocity.magnitude < forwardReverseSwitchSpeed)
+            if (direction <= 0 || rb.linearVelocity.magnitude < minSwitchSpeed)
             {
                 // checks if the car is currently moving forwards or backwards
                 reversing = true;
@@ -211,10 +213,12 @@ public class CarDriving : MonoBehaviour
         if (context.started || context.performed)
         {
             Debug.Log("Started turning left");
+            // tell the wheels to do something
         }
         else if (context.canceled)
         {
             Debug.Log("Stopped turning left");
+            // tell the wheels to do something
         }
     }
     
@@ -223,30 +227,46 @@ public class CarDriving : MonoBehaviour
         if (context.started || context.performed)
         {
             Debug.Log("Started turning right");
+            // tell the wheels to do something
         }
         else if (context.canceled)
         {
             Debug.Log("Stopped turning right");
+            // tell the wheels to do something
         }
     }
 
-    // physics methods
+    // physics methods --> to be changed to be called from the wheel scripts instead of the car script, since the wheels are the ones that apply forces to the car
     public void Accelerate()
     {
         // Accelerate the car "forwards"
-        rb.AddForce(frontAxel.transform.rotation * Vector2.up * horsepower);
+        // go through each wheel and update its drive force based on the input and the maximum drive force
+        for (int i = 0; i < 2; i++)
+        {
+            frontWheels[i].DriveForce = engineForce;
+            rearWheels[i].DriveForce = engineForce;
+        }
     }
     
     public void Reverse()
     {
         // Accelerate the car "backwards"
-        rb.AddForce(frontAxel.transform.rotation * Vector2.down * horsepower);
+        for (int i = 0; i < 2; i++)
+        {
+            frontWheels[i].DriveForce = engineForce;
+            rearWheels[i].DriveForce = engineForce;
+        }
     }
 
     public void Brake()
     {
         // Descelerate the car
-        ApplyFriction(brakingCoefficient);
+        ApplyFriction(brakeStrength);
+    }
+
+    private void ApplyForce(Vector3 force, ForceMode2D mode = ForceMode2D.Force)
+    {
+        rb.AddForce(force, mode);
     }
 
     private void ApplyFriction(float frictionCoefficient = 0.7f)
@@ -259,18 +279,7 @@ public class CarDriving : MonoBehaviour
                 rb.linearVelocity = Vector2.zero;
                 return;
             }
-            rb.AddForce(Wheel.transform.rotation * Vector2.down * rb.linearVelocity * frictionCoefficient);
+            rb.AddForce(frontAxel.transform.rotation * Vector2.down * rb.linearVelocity * frictionCoefficient);
         }
-    }
-
-    private void LoseTraction()
-    {
-        // not implemented yet, will be used to control drifting and traction
-        isGrounded = false;
-    }
-
-    private void VisuallyTurnWheels()
-    {
-        
     }
 }

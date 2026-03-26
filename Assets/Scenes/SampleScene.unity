@@ -515,7 +515,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 3
+  m_SortingOrder: 1
   m_MaskInteraction: 0
   m_Sprite: {fileID: -8030835215644163416, guid: fb7534dd2f6e91449987356cb157eeed, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -665,10 +665,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CarDriving
   mass: 1
+  wheelMass: 0.2
   horsepower: 7
   brakingCoefficient: 1
   forwardReverseSwitchSpeed: 3
-  turnRadius: 10
+  maxSteeringAngle: 40
   Wheel: {fileID: 3518886023248738075, guid: 48c13e76052b68545b0b53f40c39ab38, type: 3}
   Axel: {fileID: 4976698403212226847, guid: 2ebe807ec87d843408199b5c275fb575, type: 3}
   CarCamera: {fileID: 519420031}
@@ -696,7 +697,7 @@ Rigidbody2D:
     serializedVersion: 2
     m_Bits: 0
   m_Interpolate: 0
-  m_SleepingMode: 1
+  m_SleepingMode: 0
   m_CollisionDetection: 0
   m_Constraints: 0
 --- !u!70 &1606871126
