@@ -45,6 +45,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99cc59b8c671b19488efd345b6965ee3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
+  IsFrontWheel: 0
+  IsDriveWheel: 0
+  _brakeForce: 100
+  _forwardGrip: 5
+  _sidewaysGrip: 15
+  _maxGripForce: 300
+  _maxSteeringAngle: 35
+  _turnSmoothingFactor: 10
 --- !u!212 &3439153152198316625
 SpriteRenderer:
   serializedVersion: 2
