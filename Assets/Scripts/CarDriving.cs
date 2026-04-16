@@ -23,15 +23,14 @@ public class CarDriving : MonoBehaviour
         {"left_right", 1.2f},
         {"front_back", 1.82f}
     };
+    private Vector3 sensorOffset = new Vector3(0, 2.9f, 0); // offset of the sensor from the center of the car, used to spawn the sensor in the correct position
 
     // serialized fields
+    // physics properties
     [SerializeField] private float mass = 20f;
     [SerializeField] private float maxDriveForce = 500f;
     [SerializeField] private float maxReverseDriveForce = 250f;
     [SerializeField] private float maxSwitchSpeed = 1;
-    // sudo serialized steering properties
-    private float maxSteeringAngle = 35; // degrees, most cars are between 30 and 40
-    public float MaxSteeringAngle { get { return maxSteeringAngle; } set { maxSteeringAngle = value; for(int i = 0; i < 2; i++) { _frontWheels[i].SetMaxSteeringAngle(value); } } }
     [SerializeField] private float throttleRiseSpeed = 2f; // how quickly the throttle input rises when accelerating
     [SerializeField] private float throttleFallSpeed = 2f; // how quickly the throttle input falls when decelerating
     [SerializeField] private float angularDampingFactor = 5f;
@@ -39,6 +38,7 @@ public class CarDriving : MonoBehaviour
     // prefabs and reference objects
     [SerializeField] private GameObject Wheel;
     [SerializeField] private GameObject Axel;
+    [SerializeField] private GameObject CarSensor;
     [SerializeField] private Camera CarCamera;
 
 
@@ -53,6 +53,7 @@ public class CarDriving : MonoBehaviour
         // spawn the wheels and assign them to the front and back wheel arrays
         CreateWheels();
         CreateAxels();
+        CreateSensor();
     }
 
     private void Update()
@@ -146,16 +147,31 @@ public class CarDriving : MonoBehaviour
         _rearAxelLineRenderer.SetPosition(0, _rearWheels[0].transform.position / 2);
         _rearAxelLineRenderer.SetPosition(1, _rearWheels[1].transform.position / 2);
     }
+    
+    private void CreateSensor()
+    {
+        // instantiate the sensor and set it as a child of the car
+        GameObject sensor = Instantiate(
+            CarSensor,
+            transform.position + sensorOffset,
+            transform.rotation,
+            this.transform);
+        sensor.name = "Car Sensor";
+        sensor.GetComponent<Sensor>().SetRigidbody(rb);
+    }
     // input methods
     public void AccelerateInput(InputAction.CallbackContext context)
     {
-        if (context.started || context.performed)
+        if ((context.started || context.performed) 
+            && Vector3.Dot(
+                rb.linearVelocity, 
+                transform.forward * maxSwitchSpeed) >= 0)
         {
             // accelerate
             _throttleTarget = 1f;
             Debug.Log("Started accelerating");
         }
-        else if (context.canceled)
+        else if (context.canceled && _throttleTarget > 0f) // make sure to not override reverse input
         {
             // idle
             _throttleTarget = 0f;
@@ -165,14 +181,17 @@ public class CarDriving : MonoBehaviour
 
     public void ReverseInput(InputAction.CallbackContext context)
     {
-        if (context.started || context.performed)
+        if ((context.started || context.performed) 
+        && Vector3.Dot(
+            rb.linearVelocity, 
+            transform.forward * maxSwitchSpeed) <= 0)
         {
             // reverse
             _throttleTarget = -1f;
             Debug.Log("Started reversing");
 
         }
-        else if (context.canceled)
+        else if (context.canceled && _throttleTarget < 0f) // make sure to not override accelerate input
         {
             // idle
             _throttleTarget = 0f;
