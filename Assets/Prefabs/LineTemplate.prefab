@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3205961831252996566}
   - component: {fileID: 8133106218230325518}
   m_Layer: 5
-  m_Name: Axel
+  m_Name: LineTemplate
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

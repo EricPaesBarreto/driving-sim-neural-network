@@ -46,7 +46,7 @@ public class CarDriving : MonoBehaviour
     private void Awake()
     {
         // get the rigidbody component and set its mass
-        rb = this.GetComponent<Rigidbody2D>();
+        rb = GetComponent<Rigidbody2D>();
         rb.mass = mass;
         rb.angularDamping = angularDampingFactor;
 
@@ -95,7 +95,7 @@ public class CarDriving : MonoBehaviour
                     Wheel, 
                     transform.position + wheelOffset, 
                     transform.rotation, 
-                    this.transform);
+                    transform);
 
                     // if the wheel is a front wheel, set it to be a drive wheel
                     if (fb % 2 == 0)
@@ -126,7 +126,7 @@ public class CarDriving : MonoBehaviour
             Axel, 
             transform.position, 
             transform.rotation, 
-            this.transform);
+            transform);
         _frontAxel.name = "Front Axel";
 
         // create the rear axel
@@ -134,7 +134,7 @@ public class CarDriving : MonoBehaviour
             Axel, 
             transform.position, 
             transform.rotation, 
-            this.transform);
+            transform);
         _rearAxel.name = "Rear Axel";
 
         // change the position of the front axel's linerenderer points to match the position of the front wheels
@@ -155,7 +155,7 @@ public class CarDriving : MonoBehaviour
             CarSensor,
             transform.position + sensorOffset,
             transform.rotation,
-            this.transform);
+            transform);
         sensor.name = "Car Sensor";
         sensor.GetComponent<Sensor>().SetRigidbody(rb);
     }
